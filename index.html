@@ -22,14 +22,16 @@
         .btn-nav { background: transparent; border: 2px solid var(--dorado-solido); padding: 8px 15px; border-radius: 20px; font-weight: 700; color: var(--dorado-solido); cursor: pointer; font-size: 0.8rem; transition: 0.3s; }
         .btn-nav:hover { background: var(--dorado-solido); color: white; }
 
-        .hero { text-align: center; padding: 40px 20px; background: var(--blanco); border-bottom: 4px solid var(--dorado-solido); margin-bottom: 20px; }
+        .hero { text-align: center; padding: 40px 20px 50px 20px; background: var(--blanco); border-bottom: 4px solid var(--dorado-solido); margin-bottom: 20px; }
         .hero h1 { font-size: 3rem; margin: 0; line-height: 1.1; }
         .fecha-tag { background-color: #fcefd0; color: #9c7c18; padding: 8px 16px; border-radius: 10px; font-weight: 700; display: inline-block; margin-top: 15px; font-size: 0.9rem; }
         
-        /* ESTILO NUEVO PARA LA FOTO */
         .foto-premio { width: 90%; max-width: 500px; height: 250px; margin: 25px auto; border: 3px solid var(--dorado-solido); border-radius: 15px; object-fit: cover; box-shadow: 0 10px 20px rgba(0,0,0,0.1); background-color: #eee; display: block; }
         
         .precio-pill { background: var(--dorado-solido); color: white; padding: 12px 30px; border-radius: 50px; font-weight: 800; font-size: 1.2rem; display: inline-block; box-shadow: 0 5px 15px rgba(197, 160, 40, 0.3); }
+
+        .btn-facebook { background-color: var(--azul-facebook); color: white; text-decoration: none; padding: 12px 25px; border-radius: 50px; font-weight: 700; display: inline-flex; align-items: center; gap: 10px; margin-top: 25px; box-shadow: 0 5px 15px rgba(24, 119, 242, 0.3); transition: transform 0.3s; }
+        .btn-facebook:hover { transform: translateY(-3px); }
 
         .area-compra { padding: 10px 3%; text-align: center; flex: 1; }
         
@@ -57,7 +59,10 @@
         .footer-links a:hover { color: var(--dorado-solido); text-decoration: underline; }
         .separador { margin: 0 10px; color: #444; }
         .creditos { margin-top: 25px; font-size: 0.75rem; opacity: 0.6; letter-spacing: 0.5px; }
-        .creditos strong { color: var(--dorado-solido); font-weight: 900; opacity: 1; }
+        
+        /* ESTILOS PARA TU ENLACE DEL FOOTER */
+        .link-creador { color: var(--dorado-solido); text-decoration: none; font-weight: 900; transition: all 0.3s ease; }
+        .link-creador:hover { text-decoration: underline; opacity: 0.8; }
 
         @media (max-width: 600px) { .grid-boletos { grid-template-columns: repeat(4, 1fr); } }
     </style>
@@ -78,7 +83,11 @@
         
         <img id="img-premio-display" class="foto-premio" src="https://via.placeholder.com/500x250?text=Cargando+Imagen..." alt="Premio de la Rifa">
         
-        <div class="precio-pill">$1.00 MXN x Boleto</div>
+        <div class="precio-pill">$1.00 MXN x Boleto</div><br>
+
+        <a href="TU_LINK_DE_FACEBOOK_AQUI" target="_blank" class="btn-facebook">
+            <i class="fab fa-facebook-f"></i> Sigue la Rifa en VIVO
+        </a>
     </section>
 
     <section class="area-compra">
@@ -123,7 +132,7 @@
             <a href="privacidad.html">Aviso de Privacidad</a>
         </div>
         <div class="creditos">
-            Creado y Diseñado por <strong>Antuan Lima</strong>
+            Creado y Diseñado por <a href="https://www.instagram.com/1adgl2?igsh=MXNtbTlqNTd5Y2I3cQ%3D%3D&utm_source=qr" target="_blank" class="link-creador">Antuan Lima</a>
         </div>
     </footer>
 
