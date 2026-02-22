@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Instrucciones de Pago | Rifas del Volcán</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <style>
+        :root { --fondo: #f9f9f9; --blanco: #ffffff; --negro-suave: #2c2c2c; --dorado-solido: #c5a028; --verde-whats: #25d366; }
+        body { font-family: 'Montserrat', sans-serif; margin: 0; padding: 0; background-color: var(--fondo); color: var(--negro-suave); display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        
+        header { width: 100%; background-color: var(--blanco); padding: 15px 5%; display: flex; justify-content: center; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .logo { font-size: 1.5rem; font-weight: 900; color: var(--dorado-solido); text-transform: uppercase; }
+
+        .checkout-container { background: var(--blanco); width: 90%; max-width: 550px; margin: 30px auto; padding: 30px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); text-align: center; }
+        
+        .timer-box { background: #fff3cd; color: #856404; padding: 15px; border-radius: 10px; font-weight: 700; font-size: 1.1rem; margin-bottom: 20px; border: 2px solid #ffeeba; }
+        
+        .resumen { text-align: left; background: #f4f4f4; padding: 20px; border-radius: 10px; margin-bottom: 25px; }
+        .resumen h3 { margin-top: 0; border-bottom: 2px solid #ddd; padding-bottom: 10px; }
+        .fila-resumen { display: flex; justify-content: space-between; margin-bottom: 10px; font-weight: 600; font-size: 1.1rem; }
+        .total { font-size: 1.5rem; font-weight: 900; color: var(--dorado-solido); border-top: 2px dashed #ddd; padding-top: 15px; margin-top: 10px; }
+
+        /* Tarjetas de Pago */
+        .metodos-pago { display: flex; flex-direction: column; gap: 15px; text-align: left; margin-bottom: 25px; }
+        .tarjeta-banco { border: 2px solid #eee; padding: 15px; border-radius: 10px; position: relative; }
+        .tarjeta-banco h4 { margin: 0 0 10px 0; color: var(--negro-suave); display: flex; align-items: center; gap: 8px; }
+        .tarjeta-banco p { margin: 5px 0; font-size: 0.95rem; color: #555; font-family: monospace; font-size: 1.1rem; font-weight: bold; }
+        .copiar-btn { position: absolute; right: 15px; top: 15px; background: #eee; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-weight: bold; color: #555; transition: 0.2s; }
+        .copiar-btn:hover { background: var(--dorado-solido); color: white; }
+
+        /* Botón WhatsApp */
+        .btn-whatsapp { background: var(--verde-whats); color: white; border: none; padding: 18px; width: 100%; border-radius: 50px; font-weight: 800; font-size: 1.2rem; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 10px; transition: transform 0.2s; box-shadow: 0 5px 15px rgba(37, 211, 102, 0.3); text-decoration: none; }
+        .btn-whatsapp:hover { transform: scale(1.02); }
+
+        .btn-cancelar { background: transparent; border: none; color: #888; font-weight: 600; text-decoration: underline; margin-top: 25px; cursor: pointer; display: inline-block; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">RIFAS VOLCÁN 🌋</div>
+    </header>
+
+    <div class="checkout-container">
+        <h2 style="margin-top: 0;">¡Boletos Apartados! 🎉</h2>
+        
+        <div class="timer-box">
+            <i class="fas fa-hourglass-half"></i> Tienes 24 horas para realizar tu pago o tus boletos serán liberados.
+        </div>
+
+        <div class="resumen">
+            <h3>Resumen de tu pedido</h3>
+            <div class="fila-resumen">
+                <span>Boletos:</span>
+                <span id="txt-boletos" style="color:#666;">Cargando...</span>
+            </div>
+            <div class="fila-resumen total">
+                <span>Total a Pagar:</span>
+                <span id="txt-total">$0.00 MXN</span>
+            </div>
+        </div>
+
+        <h3 style="text-align: left; margin-bottom: 10px;">Opciones de Pago</h3>
+        <div class="metodos-pago">
+            
+            <div class="tarjeta-banco" style="border-left: 5px solid #ec0000;">
+                <button class="copiar-btn" onclick="copiarTexto('123456789012345678')"><i class="fas fa-copy"></i> Copiar</button>
+                <h4><i class="fas fa-university" style="color:#ec0000;"></i> Transferencia Santander</h4>
+                <p>CLABE: <span id="123456789012345678">123456789012345678</span></p>
+                <span style="font-size: 0.85rem; color:#888;">A nombre de: Juan Pérez</span>
+            </div>
+
+            <div class="tarjeta-banco" style="border-left: 5px solid #009ee3;">
+                <button class="copiar-btn" onclick="copiarTexto('4152313456789012')"><i class="fas fa-copy"></i> Copiar</button>
+                <h4><i class="fas fa-store" style="color:#009ee3;"></i> Depósito OXXO / Mercado Pago</h4>
+                <p>Tarjeta: <span id="4152313456789012">4152 3134 5678 9012</span></p>
+                <span style="font-size: 0.85rem; color:#888;">A nombre de: Juan Pérez</span>
+            </div>
+
+        </div>
+
+        <p style="font-size: 0.9rem; color: #666; margin-bottom: 20px;">Una vez realizado el pago, envíanos la foto de tu comprobante por WhatsApp para validar tus boletos.</p>
+
+        <a href="#" id="enlace-whatsapp" class="btn-whatsapp" target="_blank">
+            <i class="fab fa-whatsapp" style="font-size: 1.5rem;"></i> Enviar Comprobante
+        </a>
+
+        <a href="index.html" class="btn-cancelar">Volver al inicio</a>
+    </div>
+
+    <script>
+        // 🔴🔴🔴 AQUÍ ESTÁ EL CAMBIO DE PRECIO A $1 PESO 🔴🔴🔴
+        var PRECIO = 1; 
+        
+        // 🔴 NO OLVIDES PONER EL NÚMERO DE WHATSAPP REAL AQUÍ (ej. 5212221234567)
+        var NUMERO_WHATSAPP = "5212221234567"; 
+
+        function obtenerBoletosDeURL() {
+            var params = new URLSearchParams(window.location.search);
+            var boletosString = params.get('boletos');
+            
+            if (!boletosString) {
+                window.location.href = 'index.html'; 
+                return;
+            }
+            
+            var boletosArray = boletosString.split(',');
+            var formateados = boletosArray.map(function(b) { return ("000000" + b).slice(-6); }).join(', ');
+            var total = boletosArray.length * PRECIO;
+
+            // Mostrar en pantalla
+            document.getElementById('txt-boletos').textContent = formateados;
+            document.getElementById('txt-total').textContent = "$" + total + ".00 MXN";
+
+            // Armar el mensaje automático para WhatsApp
+            var mensaje = "Hola! Acabo de apartar los boletos: *" + formateados + "*. \nMi total a pagar es de: *$" + total + " MXN*. \n\nAquí te envío mi comprobante de pago: 📸";
+            
+            // Crear el enlace
+            var urlWhatsapp = "https://wa.me/" + NUMERO_WHATSAPP + "?text=" + encodeURIComponent(mensaje);
+            document.getElementById('enlace-whatsapp').href = urlWhatsapp;
+        }
+
+        // Función para copiar números de cuenta
+        function copiarTexto(id) {
+            var texto = document.getElementById(id).innerText;
+            navigator.clipboard.writeText(texto).then(function() {
+                alert("¡Número copiado!");
+            });
+        }
+
+        obtenerBoletosDeURL();
+    </script>
+</body>
+</html>

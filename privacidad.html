@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Aviso de Privacidad Integral | Rifas del Volcán</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        :root {
+            --fondo: #f9f9f9;
+            --blanco: #ffffff;
+            --negro-suave: #2c2c2c;
+            --negro-footer: #1a1a1a;
+            --dorado-brillo: linear-gradient(45deg, #d4af37, #f1d78a, #d4af37);
+            --dorado-solido: #c5a028;
+        }
+
+        body { 
+            font-family: 'Montserrat', sans-serif; 
+            margin: 0; padding: 0; background-color: var(--fondo); 
+            color: var(--negro-suave); display: flex; flex-direction: column; min-height: 100vh; 
+        }
+
+        header { 
+            background-color: var(--blanco); padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 1000; 
+        }
+        .logo { font-size: 1.5rem; font-weight: 900; text-transform: uppercase; background: var(--dorado-brillo); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        
+        .btn-regresar { 
+            text-decoration: none; border: 2px solid var(--dorado-solido); padding: 8px 15px; border-radius: 20px; font-weight: 700; color: var(--dorado-solido); font-size: 0.8rem; transition: all 0.3s;
+        }
+        .btn-regresar:hover { background: var(--dorado-solido); color: white; }
+
+        .legal-container {
+            max-width: 900px; margin: 40px auto; background: var(--blanco);
+            padding: 50px; border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            border-top: 5px solid var(--dorado-solido);
+        }
+
+        h1 { font-size: 2.2rem; margin-bottom: 5px; color: var(--negro-suave); }
+        .intro-text { font-size: 1rem; color: #666; margin-bottom: 30px; border-bottom: 1px solid #eee; padding-bottom: 20px; }
+
+        h2 { 
+            font-size: 1.3rem; margin-top: 40px; margin-bottom: 15px; 
+            color: var(--dorado-solido); font-weight: 800; text-transform: uppercase;
+            border-left: 4px solid var(--dorado-solido); padding-left: 15px;
+        }
+        
+        p, li { font-size: 0.95rem; line-height: 1.7; color: #444; margin-bottom: 15px; text-align: justify; }
+        ul { padding-left: 20px; list-style-type: square; }
+        strong { color: #222; }
+
+        .tech-note {
+            background-color: #f0f4f8; border-left: 6px solid #607d8b;
+            padding: 20px; margin: 30px 0; font-size: 0.9rem; border-radius: 5px;
+        }
+
+        footer { background-color: var(--negro-footer); color: #888; padding: 40px 20px; text-align: center; font-size: 0.85rem; margin-top: auto; border-top: 4px solid var(--dorado-solido); }
+        .developer-credit span { color: var(--dorado-solido); font-weight: 700; }
+
+        @media (max-width: 600px) { .legal-container { margin: 15px; padding: 25px; } }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">RIFAS DEL VOLCÁN 🌋</div>
+        <a href="index.html" class="btn-regresar"><i class="fas fa-arrow-left"></i> Volver</a>
+    </header>
+
+    <section class="legal-container">
+        <h1>Aviso de Privacidad Integral</h1>
+        <div class="intro-text">
+            En cumplimiento estricto con la <strong>Ley Federal de Protección de Datos Personales en Posesión de los Particulares (LFPDPPP)</strong>.<br>
+            Vigente para el sorteo del: <strong id="fecha-dinamica">Cargando...</strong>
+        </div>
+
+        <p>En <strong>Rifas del Volcán</strong>, la privacidad y seguridad de su información personal es nuestra prioridad absoluta. Este documento detalla cómo recolectamos, protegemos y utilizamos sus datos.</p>
+
+        <h2>1. Identidad y Domicilio del Responsable</h2>
+        <p>El responsable del tratamiento de sus datos es el equipo organizador de <strong>Rifas del Volcán</strong>, con domicilio para oír y recibir notificaciones en <strong>San Pedro Cholula, Puebla</strong>.</p>
+
+        <h2>2. Datos Personales que Recabamos</h2>
+        <p>Para procesar su participación, recolectamos los siguientes datos de identificación y contacto:</p>
+        <ul>
+            <li><strong>Nombre Completo:</strong> Necesario para asignar la titularidad de los boletos.</li>
+            <li><strong>Número de Teléfono (WhatsApp):</strong> Canal principal para confirmación de apartados, envío de Folios Oficiales y contacto en caso de resultar ganador.</li>
+            <li><strong>Datos Patrimoniales:</strong> Fotografías o capturas de pantalla de los comprobantes de pago (transferencias o depósitos) exclusivamente para validación contable.</li>
+        </ul>
+
+        <h2>3. Finalidades del Tratamiento</h2>
+        <p>Sus datos personales se utilizan para las siguientes finalidades esenciales:</p>
+        <ul>
+            <li>Validar la legitimidad de las transacciones y prevenir fraudes.</li>
+            <li>Generar y asignar folios de verificación únicos en nuestra base de datos.</li>
+            <li>Notificar resultados y coordinar la entrega física de los premios.</li>
+            <li>Garantizar la transparencia del sorteo ante todos los participantes.</li>
+        </ul>
+
+        <div class="tech-note">
+            <h3>4. Rol de Antuan Lima (Desarrollador)</h3>
+            <p>Se informa a los usuarios que <strong>Antuan Lima</strong> actúa estrictamente como <strong>Encargado del Tratamiento</strong> (Proveedor Tecnológico). El desarrollador administra la infraestructura técnica y la base de datos bajo instrucciones del organizador, pero no tiene propiedad sobre los fondos recaudados ni responsabilidad en la asignación de premios.</p>
+        </div>
+
+        <h2>5. Derechos ARCO</h2>
+        <p>Usted tiene derecho a conocer qué datos tenemos de usted (Acceso), solicitar correcciones (Rectificación), pedir que los eliminemos (Cancelación) u oponerse al uso para fines específicos (Oposición). Para ejercer estos derechos, envíe un mensaje a nuestro WhatsApp oficial con su solicitud.</p>
+
+        <h2>6. Medidas de Seguridad</h2>
+        <p>Contamos con medidas de seguridad técnicas (como encriptación mediante Supabase) y administrativas para proteger sus datos contra daño, pérdida, alteración o acceso no autorizado.</p>
+
+        <h2>7. Uso de Cookies</h2>
+        <p>Este sitio web utiliza cookies técnicas esenciales para mantener su sesión de apartado activa durante 24 horas y permitir el correcto funcionamiento del carrito de boletos.</p>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 <strong>Rifas del Volcán</strong>. Todos los derechos reservados.</p>
+        <div class="developer-credit">Infraestructura desarrollada por <span>Antuan Lima</span></div>
+    </footer>
+
+    <script>
+        const SUPABASE_URL = 'https://qcsfarqacgsqaddflfzb.supabase.co'; 
+        const SUPABASE_KEY = 'sb_publishable_Jwxr_1dKydjOgFedjvm50A_oHdLAwil'; 
+        
+        async function cargarFecha() {
+            if (typeof window.supabase === 'undefined') {
+                setTimeout(cargarFecha, 100);
+                return;
+            }
+            try {
+                const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                const { data } = await supabase.from('configuracion').select('fecha').eq('id', 1).single();
+                if (data && data.fecha) {
+                    document.getElementById('fecha-dinamica').innerText = data.fecha;
+                }
+            } catch (e) { console.error(e); }
+        }
+        document.addEventListener('DOMContentLoaded', cargarFecha);
+    </script>
+</body>
+</html>

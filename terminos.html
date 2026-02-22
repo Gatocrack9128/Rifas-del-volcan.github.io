@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Términos y Condiciones | Rifas del Volcán</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+        :root {
+            --fondo: #f9f9f9;
+            --blanco: #ffffff;
+            --negro-suave: #2c2c2c;
+            --negro-footer: #1a1a1a;
+            --dorado-brillo: linear-gradient(45deg, #d4af37, #f1d78a, #d4af37);
+            --dorado-solido: #c5a028;
+            --rojo-alerta: #e74c3c;
+        }
+
+        body { 
+            font-family: 'Montserrat', sans-serif; 
+            margin: 0; padding: 0; background-color: var(--fondo); 
+            color: var(--negro-suave); display: flex; flex-direction: column; min-height: 100vh; 
+        }
+
+        header { 
+            background-color: var(--blanco); padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 1000; 
+        }
+        .logo { font-size: 1.5rem; font-weight: 900; text-transform: uppercase; background: var(--dorado-brillo); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        
+        .btn-regresar { 
+            text-decoration: none; border: 2px solid var(--dorado-solido); padding: 8px 15px; border-radius: 20px; font-weight: 700; color: var(--dorado-solido); font-size: 0.8rem; transition: all 0.3s;
+        }
+        .btn-regresar:hover { background: var(--dorado-solido); color: white; }
+
+        .legal-container {
+            max-width: 900px; margin: 40px auto; background: var(--blanco);
+            padding: 50px; border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+            border-top: 5px solid var(--dorado-solido);
+        }
+
+        h1 { font-size: 2.2rem; margin-bottom: 5px; color: var(--negro-suave); }
+        .intro-text { font-size: 1rem; color: #666; margin-bottom: 30px; border-bottom: 1px solid #eee; padding-bottom: 20px; }
+
+        h2 { 
+            font-size: 1.3rem; margin-top: 40px; margin-bottom: 15px; 
+            color: var(--dorado-solido); font-weight: 800; text-transform: uppercase;
+            border-left: 4px solid var(--dorado-solido); padding-left: 15px;
+        }
+        
+        p, li { font-size: 0.95rem; line-height: 1.7; color: #444; margin-bottom: 15px; text-align: justify; }
+        ul { padding-left: 20px; list-style-type: square; }
+        strong { color: #222; }
+        .highlight { color: var(--rojo-alerta); font-weight: 700; }
+
+        .tech-note {
+            background-color: #f0f4f8; border-left: 6px solid #607d8b;
+            padding: 20px; margin: 30px 0; font-size: 0.9rem; border-radius: 5px;
+        }
+
+        footer { background-color: var(--negro-footer); color: #888; padding: 40px 20px; text-align: center; font-size: 0.85rem; margin-top: auto; border-top: 4px solid var(--dorado-solido); }
+        .developer-credit span { color: var(--dorado-solido); font-weight: 700; }
+
+        @media (max-width: 600px) { .legal-container { margin: 15px; padding: 25px; } }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">RIFAS DEL VOLCÁN 🌋</div>
+        <a href="index.html" class="btn-regresar"><i class="fas fa-arrow-left"></i> Volver</a>
+    </header>
+
+    <section class="legal-container">
+        <h1>Términos y Condiciones de Participación</h1>
+        <div class="intro-text">
+            Este documento rige la relación entre los participantes y el comité organizador.<br>
+            Reglas actualizadas para el sorteo del: <strong id="fecha-terminos">Cargando...</strong>
+        </div>
+
+        <h2>1. Descripción de la Dinámica</h2>
+        <p>Los sorteos realizados a través de este portal son organizados por iniciativa privada y tienen como base los resultados oficiales de la <strong>Lotería Nacional de México</strong>. El ganador será el usuario cuyo número de boleto adquirido coincida exactamente con las últimas cifras del Premio Mayor del sorteo designado.</p>
+
+        <h2>2. Valor del Boleto y Modalidad de Pago</h2>
+        <p>Cada boleto tiene un costo unitario de <strong>$1.00 MXN</strong>. La única forma de pago aceptada es mediante transferencia bancaria o depósito directo a las cuentas oficiales mostradas en el proceso de pago (Checkout).</p>
+
+        <h2>3. Regla Estricta de Apartado (24 Horas)</h2>
+        <p>Al seleccionar sus números en el catálogo, el sistema otorga un periodo de reserva de <strong>24 horas exactas</strong>. Durante este tiempo, los boletos no podrán ser seleccionados por otros usuarios.</p>
+        <ul>
+            <li class="highlight">Si el comprobante de pago no es enviado y validado vía WhatsApp dentro de este lapso, el sistema liberará los números automáticamente.</li>
+            <li>En caso de realizar el pago después del tiempo límite, el organizador no garantiza la titularidad de los números y el monto quedará a favor de la organización como crédito para el siguiente sorteo o se procederá a la liberación manual de otros números disponibles.</li>
+        </ul>
+
+        <h2>4. Validación de Folios y Legitimidad</h2>
+        <p>Un boleto se considera oficialmente vendido una vez que el administrador valida el comprobante de pago en el panel de control y el sistema genera un <strong>Folio Oficial de Verificación</strong>. Sin este folio, ninguna participación será considerada válida para la entrega de premios.</p>
+
+        <h2>5. Reclamación y Entrega de Premios</h2>
+        <p>Para reclamar cualquier premio, es indispensable presentar:</p>
+        <ul>
+            <li>Folio Oficial verificado en el sistema.</li>
+            <li>Identificación oficial vigente (INE/Pasaporte). El nombre registrado al momento del apartado debe coincidir al 100% con la identificación presentada.</li>
+        </ul>
+        <p>La entrega del premio se realizará en <strong>San Pedro Cholula, Puebla</strong>, o el lugar designado por el organizador, asumiendo el ganador cualquier gasto de traslado o gestión externa.</p>
+
+        <div class="tech-note">
+            <h3>6. Deslinde de Responsabilidad Técnica</h3>
+            <p>Se ratifica que <strong>Antuan Lima</strong> funge estrictamente como desarrollador y proveedor de la infraestructura tecnológica. No tiene participación en la recaudación de fondos, manejo de tesorería, sorteo de premios ni en la logística de entrega. Cualquier controversia comercial o legal deberá tratarse directamente con el comité organizador.</p>
+        </div>
+
+        <h2>7. Cancelaciones y Fraude</h2>
+        <p>No se admiten cancelaciones ni reembolsos una vez emitido el Folio Oficial. Cualquier intento de fraude mediante comprobantes falsos resultará en la prohibición permanente del usuario en futuros eventos.</p>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 <strong>Rifas del Volcán</strong>. Todos los derechos reservados.</p>
+        <div class="developer-credit">Plataforma diseñada por <span>Antuan Lima</span></div>
+    </footer>
+
+    <script>
+        const SUPABASE_URL = 'https://qcsfarqacgsqaddflfzb.supabase.co'; 
+        const SUPABASE_KEY = 'sb_publishable_Jwxr_1dKydjOgFedjvm50A_oHdLAwil'; 
+        
+        async function cargarFecha() {
+            if (typeof window.supabase === 'undefined') {
+                setTimeout(cargarFecha, 100);
+                return;
+            }
+            try {
+                const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                const { data } = await supabase.from('configuracion').select('fecha').eq('id', 1).single();
+                if (data && data.fecha) {
+                    document.getElementById('fecha-terminos').innerText = data.fecha;
+                }
+            } catch (e) { console.error(e); }
+        }
+        document.addEventListener('DOMContentLoaded', cargarFecha);
+    </script>
+</body>
+</html>

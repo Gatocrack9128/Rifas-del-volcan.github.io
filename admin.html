@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración | Rifas</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        :root { --fondo: #f4f6f9; --blanco: #ffffff; --negro: #2c2c2c; --dorado: #c5a028; --verde: #2ecc71; --rojo: #e74c3c; --azul: #3498db; }
+        body { font-family: 'Montserrat', sans-serif; margin: 0; padding: 0; background-color: var(--fondo); color: var(--negro); }
+        
+        /* LOGIN */
+        #login-screen { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; background: var(--negro); color: white; }
+        .login-box { background: var(--blanco); color: var(--negro); padding: 40px; border-radius: 15px; text-align: center; width: 90%; max-width: 400px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .login-box input { width: 100%; padding: 15px; margin: 10px 0; border: 2px solid #ddd; border-radius: 10px; font-size: 1rem; text-align: center; }
+        .btn-login { background: var(--dorado); color: white; border: none; padding: 15px; width: 100%; border-radius: 10px; font-weight: 800; font-size: 1.1rem; cursor: pointer; margin-top: 10px; transition: 0.3s; }
+
+        /* PANEL */
+        #admin-screen { display: none; padding: 20px; max-width: 1000px; margin: 0 auto; }
+        header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 3px solid var(--dorado); padding-bottom: 15px; }
+        
+        /* PESTAÑAS (TABS) */
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+        .btn-tab { padding: 12px 25px; border: none; border-radius: 10px; font-weight: 800; cursor: pointer; background: #ddd; color: #666; transition: 0.3s; font-size: 1rem; }
+        .btn-tab.activo { background: var(--negro); color: white; }
+
+        .panel-controles { background: var(--blanco); padding: 20px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;}
+        
+        .tabla-contenedor { overflow-x: auto; width: 100%; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        table { width: 100%; background: var(--blanco); border-collapse: collapse; min-width: 700px; }
+        th, td { padding: 15px; text-align: center; border-bottom: 1px solid #eee; }
+        th { background: var(--negro); color: white; font-weight: 700; }
+        tr:hover { background-color: #f9f9f9; }
+
+        .checkbox-boleto { transform: scale(1.5); cursor: pointer; }
+        .btn-accion { padding: 10px 20px; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; color: white; }
+        .btn-aprobar { background-color: var(--verde); }
+        .btn-rechazar { background-color: var(--rojo); }
+        .btn-excel { background-color: #217346; color: white; padding: 10px 20px; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; }
+        
+        .link-whats { color: #25d366; font-weight: 700; text-decoration: none; padding: 5px 10px; border: 1px solid #25d366; border-radius: 20px; display: inline-block; }
+        .folio-etiqueta { background: #fcefd0; color: #c5a028; padding: 5px 10px; border-radius: 8px; font-weight: 900; font-family: monospace; font-size: 1rem; }
+
+        .zona-peligro { background: #ffebee; border: 2px dashed #e74c3c; padding: 20px; border-radius: 10px; margin-top: 40px; text-align: center; }
+    </style>
+</head>
+<body>
+
+    <div id="login-screen">
+        <div class="login-box">
+            <h2><i class="fas fa-shield-alt" style="color: var(--dorado);"></i> Acceso Seguro</h2>
+            <p style="color: #666; font-size: 0.9rem; margin-bottom: 20px;">Conexión directa con Supabase</p>
+            <input type="email" id="input-email" placeholder="Correo de Administrador">
+            <input type="password" id="input-pass" placeholder="Contraseña Segura">
+            <button class="btn-login" onclick="iniciarSesion()">Entrar al Panel</button>
+        </div>
+    </div>
+
+    <div id="admin-screen">
+        <header>
+            <h2>🌋 Panel de Control</h2>
+            <button onclick="cerrarSesion()" style="background:transparent; border:none; color:var(--rojo); cursor:pointer; font-weight:700;"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</button>
+        </header>
+
+        <div class="tabs">
+            <button class="btn-tab activo" id="tab-pendientes" onclick="cambiarPestana('pendientes')"><i class="fas fa-clock"></i> Pendientes de Pago</button>
+            <button class="btn-tab" id="tab-vendidos" onclick="cambiarPestana('vendidos')"><i class="fas fa-ticket-alt"></i> Boletos Vendidos</button>
+        </div>
+
+        <div class="panel-controles" style="background: #e3f2fd; border-left: 5px solid #3498db; margin-bottom: 25px; flex-direction: column; align-items: stretch;">
+            <div style="margin-bottom: 15px;">
+                <h3 style="margin-top:0; color: #2980b9;"><i class="fas fa-cog"></i> Configuración del Sorteo</h3>
+                <p style="margin:0; font-size:0.9rem; color:#555;">Cambia la fecha y la imagen del premio que ven los clientes.</p>
+            </div>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 10px;">
+                <input type="text" id="input-fecha" placeholder="Ej. 20 de Mayo, 2026" style="padding: 10px; border-radius: 5px; border: 1px solid #ccc; flex: 1; min-width: 200px; font-weight: bold;">
+                <input type="text" id="input-imagen" placeholder="Pega aquí el enlace (URL) de la foto del premio..." style="padding: 10px; border-radius: 5px; border: 1px solid #ccc; flex: 2; min-width: 250px;">
+                <button class="btn-accion" style="background-color: #2980b9;" onclick="guardarConfiguracion()"><i class="fas fa-save"></i> Guardar Cambios</button>
+            </div>
+        </div>
+
+        <div id="seccion-pendientes">
+            <div class="panel-controles">
+                <div>
+                    <h3>Boletos por Aprobar</h3>
+                    <p style="margin:0; font-size:0.9rem; color:#666;">Palomea los que ya pagaron y dales Aprobar.</p>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn-accion btn-aprobar" onclick="procesarSeleccionados('aprobar')"><i class="fas fa-check"></i> Aprobar Pago</button>
+                    <button class="btn-accion btn-rechazar" onclick="procesarSeleccionados('liberar')"><i class="fas fa-trash"></i> Liberar</button>
+                </div>
+            </div>
+
+            <div class="tabla-contenedor">
+                <table>
+                    <thead>
+                        <tr>
+                            <th><input type="checkbox" id="check-todos" class="checkbox-boleto" onclick="seleccionarTodos()"></th>
+                            <th>Nº Boleto</th>
+                            <th>Comprador</th>
+                            <th>WhatsApp</th>
+                            <th>Fecha</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-body-pendientes">
+                        <tr><td colspan="5">Cargando...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="seccion-vendidos" style="display: none;">
+            <div class="panel-controles">
+                <div>
+                    <h3>Lista Oficial de Participantes</h3>
+                    <p style="margin:0; font-size:0.9rem; color:#666;">Estos son los boletos pagados y verificados.</p>
+                </div>
+                <button class="btn-excel" onclick="descargarExcel()"><i class="fas fa-file-excel"></i> Descargar Lista (Excel)</button>
+            </div>
+
+            <div class="tabla-contenedor">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Nº Boleto</th>
+                            <th>Folio Oficial</th>
+                            <th>Comprador</th>
+                            <th>WhatsApp</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tabla-body-vendidos">
+                        <tr><td colspan="4">Cargando...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="zona-peligro">
+                <h3 style="color: #e74c3c; margin-top: 0;"><i class="fas fa-exclamation-triangle"></i> Zona de Peligro</h3>
+                <p style="color: #555; font-size: 0.95rem;">Usa este botón solo cuando haya terminado la rifa actual y quieras empezar una nueva desde cero.</p>
+                <button class="btn-accion btn-rechazar" onclick="reiniciarRifa()"><i class="fas fa-skull-crossbones"></i> Borrar Todo e Iniciar Nueva Rifa</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var SUPABASE_URL = 'https://qcsfarqacgsqaddflfzb.supabase.co'; 
+        var SUPABASE_KEY = 'sb_publishable_Jwxr_1dKydjOgFedjvm50A_oHdLAwil'; 
+        var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        var dataVendidos = []; 
+
+        async function iniciarSesion() {
+            var email = document.getElementById('input-email').value;
+            var pass = document.getElementById('input-pass').value;
+            if (!email || !pass) return Swal.fire('Error', 'Llena ambos campos.', 'warning');
+
+            Swal.fire({ title: 'Autenticando...', allowOutsideClick: false, didOpen: () => { Swal.showLoading() } });
+            var { error } = await supabase.auth.signInWithPassword({ email: email, password: pass });
+
+            if (error) {
+                Swal.fire('Denegado', 'Credenciales incorrectas.', 'error');
+            } else {
+                Swal.close();
+                mostrarPanel();
+            }
+        }
+
+        async function cerrarSesion() {
+            await supabase.auth.signOut();
+            window.location.reload();
+        }
+
+        window.onload = async function() {
+            var { data: { session } } = await supabase.auth.getSession();
+            if (session) mostrarPanel();
+        }
+
+        function mostrarPanel() {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('admin-screen').style.display = 'block';
+            cargarPendientes();
+            obtenerConfiguracion(); // <--- Carga fecha y foto al entrar
+        }
+
+        // --- CONFIGURACIÓN DE FECHA E IMAGEN ---
+        async function obtenerConfiguracion() {
+            try {
+                var { data } = await supabase.from('configuracion').select('fecha, imagen').eq('id', 1).single();
+                if (data) {
+                    document.getElementById('input-fecha').value = data.fecha || '';
+                    document.getElementById('input-imagen').value = data.imagen || '';
+                }
+            } catch(e) { console.log(e); }
+        }
+
+        async function guardarConfiguracion() {
+            var nuevaFecha = document.getElementById('input-fecha').value.trim();
+            var nuevaImagen = document.getElementById('input-imagen').value.trim();
+            
+            if (!nuevaFecha) return Swal.fire('Aviso', 'La fecha no puede estar vacía.', 'warning');
+            
+            Swal.showLoading();
+            try {
+                var { error } = await supabase.from('configuracion').update({ fecha: nuevaFecha, imagen: nuevaImagen }).eq('id', 1);
+                if (error) throw error;
+                Swal.fire('¡Actualizado!', 'La configuración se aplicó en la página principal.', 'success');
+            } catch(e) {
+                console.error(e);
+                Swal.fire('Error', 'No se pudo guardar. Revisa el código en SQL Editor.', 'error');
+            }
+        }
+
+        function cambiarPestana(pestana) {
+            document.getElementById('tab-pendientes').classList.remove('activo');
+            document.getElementById('tab-vendidos').classList.remove('activo');
+            document.getElementById('seccion-pendientes').style.display = 'none';
+            document.getElementById('seccion-vendidos').style.display = 'none';
+
+            if (pestana === 'pendientes') {
+                document.getElementById('tab-pendientes').classList.add('activo');
+                document.getElementById('seccion-pendientes').style.display = 'block';
+                cargarPendientes();
+            } else {
+                document.getElementById('tab-vendidos').classList.add('activo');
+                document.getElementById('seccion-vendidos').style.display = 'block';
+                cargarVendidos();
+            }
+        }
+
+        async function cargarPendientes() {
+            var tbody = document.getElementById('tabla-body-pendientes');
+            tbody.innerHTML = '<tr><td colspan="5">Cargando...</td></tr>';
+            try {
+                var { data } = await supabase.from('boletos').select('*').eq('estado', 'apartado').order('created_at', { ascending: false });
+                if (!data || data.length === 0) return tbody.innerHTML = '<tr><td colspan="5" style="color:#888;">No hay pendientes.</td></tr>';
+                
+                var html = '';
+                data.forEach(function(b) {
+                    var numFormateado = ("000000" + b.numero_boleto).slice(-6);
+                    var linkWa = b.comprador_telefono ? `<a href="https://wa.me/52${b.comprador_telefono}" target="_blank" class="link-whats"><i class="fab fa-whatsapp"></i> ${b.comprador_telefono}</a>` : '-';
+                    var fecha = new Date(b.created_at).toLocaleString('es-MX');
+
+                    html += `<tr>
+                        <td><input type="checkbox" class="checkbox-boleto check-item" value="${b.numero_boleto}"></td>
+                        <td style="font-weight:900; color:var(--dorado); font-size:1.1rem;">${numFormateado}</td>
+                        <td>${b.comprador_nombre || 'Sin Nombre'}</td>
+                        <td>${linkWa}</td>
+                        <td style="font-size:0.85rem; color:#666;">${fecha}</td>
+                    </tr>`;
+                });
+                tbody.innerHTML = html;
+            } catch(e) { tbody.innerHTML = '<tr><td colspan="5">Error cargando datos.</td></tr>'; }
+        }
+
+        async function cargarVendidos() {
+            var tbody = document.getElementById('tabla-body-vendidos');
+            tbody.innerHTML = '<tr><td colspan="4">Cargando...</td></tr>';
+            try {
+                var { data } = await supabase.from('boletos').select('*').eq('estado', 'vendido').order('numero_boleto', { ascending: true });
+                dataVendidos = data || []; 
+
+                if (dataVendidos.length === 0) return tbody.innerHTML = '<tr><td colspan="4" style="color:#888;">Aún no hay boletos vendidos.</td></tr>';
+                
+                var html = '';
+                dataVendidos.forEach(function(b) {
+                    var numFormateado = ("000000" + b.numero_boleto).slice(-6);
+                    var linkWa = b.comprador_telefono ? `<a href="https://wa.me/52${b.comprador_telefono}" target="_blank" class="link-whats"><i class="fab fa-whatsapp"></i> ${b.comprador_telefono}</a>` : '-';
+
+                    html += `<tr>
+                        <td style="font-weight:900; font-size:1.1rem;">${numFormateado}</td>
+                        <td><span class="folio-etiqueta">${b.folio || 'SIN-FOLIO'}</span></td>
+                        <td>${b.comprador_nombre || 'Sin Nombre'}</td>
+                        <td>${linkWa}</td>
+                    </tr>`;
+                });
+                tbody.innerHTML = html;
+            } catch(e) { tbody.innerHTML = '<tr><td colspan="4">Error cargando datos.</td></tr>'; }
+        }
+
+        function seleccionarTodos() {
+            var maestro = document.getElementById('check-todos');
+            document.querySelectorAll('.check-item').forEach(cb => cb.checked = maestro.checked);
+        }
+
+        function generarFolio() {
+            var chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            var res = 'VOL-';
+            for (var i = 0; i < 6; i++) res += chars.charAt(Math.floor(Math.random() * chars.length));
+            return res;
+        }
+
+        async function procesarSeleccionados(accion) {
+            var seleccionados = Array.from(document.querySelectorAll('.check-item:checked')).map(cb => parseInt(cb.value));
+            if (seleccionados.length === 0) return Swal.fire('Aviso', 'Selecciona al menos un boleto.', 'warning');
+
+            var texto = accion === 'aprobar' ? '¿Confirmas el pago?' : '¿Liberar estos boletos?';
+            var result = await Swal.fire({ title: '¿Seguro?', text: texto, icon: 'warning', showCancelButton: true, confirmButtonColor: accion === 'aprobar' ? '#2ecc71' : '#e74c3c' });
+
+            if (result.isConfirmed) {
+                Swal.showLoading();
+                try {
+                    if (accion === 'aprobar') {
+                        var folioOficial = generarFolio();
+                        
+                        var { error } = await supabase.from('boletos').update({ estado: 'vendido', folio: folioOficial }).in('numero_boleto', seleccionados);
+                        if (error) throw error;
+                        
+                        Swal.fire({ icon: 'success', title: 'Aprobado ✅', html: `Folio generado:<br><h3 style="color:#c5a028;">${folioOficial}</h3>` });
+                    } else {
+                        var { error } = await supabase.from('boletos').delete().in('numero_boleto', seleccionados);
+                        if (error) throw error;
+                        
+                        Swal.fire('Liberados', 'Boletos devueltos al catálogo.', 'success');
+                    }
+                    document.getElementById('check-todos').checked = false;
+                    cargarPendientes();
+                } catch (e) { 
+                    console.error("Error de Supabase:", e);
+                    Swal.fire('Error', 'La base de datos bloqueó la acción. Revisa tus reglas RLS.', 'error'); 
+                }
+            }
+        }
+
+        function descargarExcel() {
+            if (dataVendidos.length === 0) return Swal.fire('Aviso', 'No hay boletos para descargar.', 'info');
+            var csv = "Numero_Boleto,Folio,Comprador,Telefono\n";
+            dataVendidos.forEach(function(b) {
+                var numFormateado = ("000000" + b.numero_boleto).slice(-6);
+                var nombre = (b.comprador_nombre || "").replace(/,/g, " "); 
+                var tel = b.comprador_telefono || "";
+                var folio = b.folio || "";
+                csv += `${numFormateado},${folio},${nombre},${tel}\n`;
+            });
+            var blob = new Blob(["\ufeff", csv], { type: 'text/csv;charset=utf-8;' });
+            var url = URL.createObjectURL(blob);
+            var enlace = document.createElement("a");
+            enlace.href = url;
+            enlace.download = "Lista_Participantes_Volcan.csv";
+            document.body.appendChild(enlace);
+            enlace.click();
+            document.body.removeChild(enlace);
+        }
+
+        async function reiniciarRifa() {
+            var result = await Swal.fire({
+                title: '¡ADVERTENCIA EXTREMA!',
+                text: 'Esto borrará TODOS los boletos apartados y vendidos. Para confirmar, escribe la palabra BORRAR:',
+                input: 'text',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#e74c3c',
+                confirmButtonText: 'Eliminar Todo',
+                cancelButtonText: 'Cancelar',
+                inputValidator: (value) => {
+                    if (value !== 'BORRAR') return 'Debes escribir BORRAR exactamente así (en mayúsculas).'
+                }
+            });
+
+            if (result.isConfirmed && result.value === 'BORRAR') {
+                Swal.showLoading();
+                try {
+                    var { error } = await supabase.from('boletos').delete().gt('numero_boleto', 0);
+                    if (error) throw error;
+                    
+                    Swal.fire('¡Rifa Reiniciada!', 'Se ha borrado el historial.', 'success');
+                    dataVendidos = [];
+                    cargarVendidos();
+                    cargarPendientes();
+                } catch(e) {
+                    console.error("Error de Supabase:", e);
+                    Swal.fire('Error', 'La base de datos bloqueó el borrado. Revisa tus reglas RLS.', 'error');
+                }
+            }
+        }
+    </script>
+</body>
+</html>

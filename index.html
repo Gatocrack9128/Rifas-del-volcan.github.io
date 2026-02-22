@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Rifas del Volcán | Inicio</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        :root { --fondo: #f9f9f9; --blanco: #ffffff; --negro-suave: #2c2c2c; --dorado-solido: #c5a028; --dorado-brillo: linear-gradient(45deg, #d4af37, #f1d78a, #d4af37); --verde-whatsapp: #25d366; --azul-facebook: #1877F2; --gris-claro: #ddd; }
+        * { box-sizing: border-box; }
+        body { font-family: 'Montserrat', sans-serif; margin: 0; padding: 0; background-color: var(--fondo); color: var(--negro-suave); display: flex; flex-direction: column; min-height: 100vh; }
+        
+        header { background-color: var(--blanco); padding: 15px 5%; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 12px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 1000; }
+        .logo { font-size: 1.5rem; font-weight: 900; text-transform: uppercase; background: var(--dorado-brillo); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        
+        .btn-nav { background: transparent; border: 2px solid var(--dorado-solido); padding: 8px 15px; border-radius: 20px; font-weight: 700; color: var(--dorado-solido); cursor: pointer; font-size: 0.8rem; transition: 0.3s; }
+        .btn-nav:hover { background: var(--dorado-solido); color: white; }
+
+        .hero { text-align: center; padding: 40px 20px; background: var(--blanco); border-bottom: 4px solid var(--dorado-solido); margin-bottom: 20px; }
+        .hero h1 { font-size: 3rem; margin: 0; line-height: 1.1; }
+        .fecha-tag { background-color: #fcefd0; color: #9c7c18; padding: 8px 16px; border-radius: 10px; font-weight: 700; display: inline-block; margin-top: 15px; font-size: 0.9rem; }
+        
+        /* ESTILO NUEVO PARA LA FOTO */
+        .foto-premio { width: 90%; max-width: 500px; height: 250px; margin: 25px auto; border: 3px solid var(--dorado-solido); border-radius: 15px; object-fit: cover; box-shadow: 0 10px 20px rgba(0,0,0,0.1); background-color: #eee; display: block; }
+        
+        .precio-pill { background: var(--dorado-solido); color: white; padding: 12px 30px; border-radius: 50px; font-weight: 800; font-size: 1.2rem; display: inline-block; box-shadow: 0 5px 15px rgba(197, 160, 40, 0.3); }
+
+        .area-compra { padding: 10px 3%; text-align: center; flex: 1; }
+        
+        .random-panel { background: white; border: 1px solid #eee; border-radius: 15px; padding: 20px; max-width: 450px; margin: 0 auto 30px auto; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
+        .random-controls { display: flex; gap: 10px; justify-content: center; align-items: center; margin-top: 15px; flex-wrap: wrap; }
+        .input-cantidad { padding: 10px; border: 2px solid #eee; border-radius: 10px; width: 100px; text-align: center; font-weight: 700; font-size: 1rem; }
+        .btn-suerte { background: var(--dorado-brillo); border: none; color: white; padding: 10px 20px; border-radius: 10px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+
+        .paginacion { display: flex; justify-content: center; gap: 10px; margin: 20px 0; flex-wrap: wrap; align-items: center;}
+        .btn-paginacion { background: var(--blanco); border: 1px solid var(--dorado-solido); color: var(--dorado-solido); padding: 8px 12px; border-radius: 20px; cursor: pointer; font-weight: 700; }
+        .btn-paginacion:disabled { border-color: #eee; color: #ccc; cursor: not-allowed; }
+        
+        .grid-boletos { display: grid; grid-template-columns: repeat(auto-fill, minmax(65px, 1fr)); gap: 8px; max-width: 900px; margin: 0 auto 60px auto; min-height: 300px; width: 100%; }
+        .boleto { background: var(--blanco); border: 1px solid var(--gris-claro); padding: 12px 0; font-weight: 600; color: #666; border-radius: 6px; cursor: pointer; transition: all 0.2s; user-select: none; font-size: 0.85rem; }
+        .boleto.seleccionado { background: var(--dorado-brillo); color: var(--negro-suave); border-color: transparent; font-weight: 800; transform: scale(1.05); }
+        .boleto.ocupado { background-color: #444; color: #888; border-color: #444; cursor: not-allowed; text-decoration: line-through; opacity: 0.6; pointer-events: none; }
+
+        .panel-pago { position: fixed; bottom: 0; left: 0; width: 100%; background: var(--blanco); border-top: 1px solid #ddd; padding: 20px; z-index: 2000; box-shadow: 0 -5px 20px rgba(0,0,0,0.1); display: flex; justify-content: center; transform: translateY(100%); transition: transform 0.3s; }
+        .panel-pago.activo { transform: translateY(0); }
+        .btn-ir-pagar { background: var(--negro-suave); color: white; padding: 15px 30px; border-radius: 50px; font-weight: 800; font-size: 1.1rem; border: none; cursor: pointer; width: 100%; max-width: 400px; }
+
+        footer { background-color: #1a1a1a; color: #888; padding: 40px 20px; text-align: center; font-size: 0.85rem; margin-top: auto; border-top: 4px solid var(--dorado-solido); padding-bottom: 100px; }
+        .footer-links { margin: 15px 0; }
+        .footer-links a { color: #bbb; text-decoration: none; transition: color 0.3s; cursor: pointer; }
+        .footer-links a:hover { color: var(--dorado-solido); text-decoration: underline; }
+        .separador { margin: 0 10px; color: #444; }
+        .creditos { margin-top: 25px; font-size: 0.75rem; opacity: 0.6; letter-spacing: 0.5px; }
+        .creditos strong { color: var(--dorado-solido); font-weight: 900; opacity: 1; }
+
+        @media (max-width: 600px) { .grid-boletos { grid-template-columns: repeat(4, 1fr); } }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">RIFAS VOLCÁN</div>
+        <button class="btn-nav" onclick="verificarBoleto()"><i class="fas fa-search"></i> Verificar Boleto</button>
+    </header>
+
+    <section class="hero">
+        <h1>PREMIOS <br> <span style="color:var(--dorado-solido)">EXPLOSIVOS</span></h1>
+        
+        <div class="fecha-tag" id="fecha-sorteo-display"><i class="far fa-calendar-alt"></i> Sorteo: Cargando...</div><br>
+        
+        <p style="margin-top: 20px; color: #555;">Participa por el gran premio del año.</p>
+        
+        <img id="img-premio-display" class="foto-premio" src="https://via.placeholder.com/500x250?text=Cargando+Imagen..." alt="Premio de la Rifa">
+        
+        <div class="precio-pill">$1.00 MXN x Boleto</div>
+    </section>
+
+    <section class="area-compra">
+        
+        <div class="random-panel">
+            <h3 style="margin:0; font-size:1.1rem;">¿Buscas un número en especial?</h3>
+            <div class="random-controls" style="border-bottom: 1px solid #eee; padding-bottom: 15px; margin-bottom: 15px;">
+                <input type="number" id="buscar-numero" placeholder="Ej. 85000" class="input-cantidad" style="width: 140px;">
+                <button class="btn-suerte" style="background: var(--negro-suave);" onclick="irAlBoleto()"><i class="fas fa-search"></i> Buscar</button>
+            </div>
+            
+            <h3 style="margin:0; font-size:1rem; color:#666;">O deja que la suerte decida:</h3>
+            <div class="random-controls">
+                <input type="number" id="cantidad-azar" value="1" min="1" max="50" class="input-cantidad">
+                <button class="btn-suerte" onclick="seleccionarAlAzar()"><i class="fas fa-magic"></i> Elegir al Azar</button>
+            </div>
+        </div>
+
+        <h3>Selecciona tus números</h3>
+        <p style="color: #666; font-size: 0.9rem;">Los boletos grises ya están vendidos o apartados.</p>
+        
+        <div class="paginacion">
+            <button class="btn-paginacion" id="btn-ant-full" onclick="cambiarPaginaExtrema(-1)"><i class="fas fa-angle-double-left"></i> Inicio</button>
+            <button class="btn-paginacion" id="btn-ant" onclick="cambiarPagina(-1)">Anterior</button>
+            <span id="texto-pagina" style="margin: 0 10px; font-weight: 700;">Página 1</span>
+            <button class="btn-paginacion" id="btn-sig" onclick="cambiarPagina(1)">Siguiente</button>
+            <button class="btn-paginacion" id="btn-sig-full" onclick="cambiarPaginaExtrema(1)">Final <i class="fas fa-angle-double-right"></i></button>
+        </div>
+
+        <div class="grid-boletos" id="contenedor-boletos"></div>
+    </section>
+
+    <div class="panel-pago" id="barra-pago">
+        <button class="btn-ir-pagar" id="btnPagar" onclick="irAPagar()">Apartar y Pagar $<span id="total">0</span></button>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Rifas del Volcán. Todos los derechos reservados.</p>
+        <div class="footer-links">
+            <a href="terminos.html">Términos y Condiciones</a>
+            <span class="separador">|</span>
+            <a href="privacidad.html">Aviso de Privacidad</a>
+        </div>
+        <div class="creditos">
+            Creado y Diseñado por <strong>Antuan Lima</strong>
+        </div>
+    </footer>
+
+    <script>
+        var SUPABASE_URL = 'https://qcsfarqacgsqaddflfzb.supabase.co'; 
+        var SUPABASE_KEY = 'sb_publishable_Jwxr_1dKydjOgFedjvm50A_oHdLAwil'; 
+
+        var TOTAL_BOLETOS = 100000;
+        var BOLETOS_POR_PAGINA = 100;
+        var PRECIO = 1;
+        var MINUTOS_EXPIRACION = 1440; // 24 HORAS
+
+        var paginaActual = 1;
+        var seleccionados = [];
+        var boletosOcupados = []; 
+        var supabaseCliente = null;
+
+        // --- 0. CARGAR CONFIGURACIÓN (FECHA E IMAGEN) ---
+        async function cargarConfiguracion() {
+            try {
+                if (typeof window.supabase === 'undefined') return;
+                supabaseCliente = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                var { data } = await supabaseCliente.from('configuracion').select('fecha, imagen').eq('id', 1).single();
+                if (data) {
+                    document.getElementById('fecha-sorteo-display').innerHTML = '<i class="far fa-calendar-alt"></i> Sorteo: ' + data.fecha;
+                    if (data.imagen) {
+                        document.getElementById('img-premio-display').src = data.imagen;
+                    }
+                }
+            } catch(e) { console.log("No se pudo cargar la configuración"); }
+        }
+
+        // --- 1. DIBUJAR BOLETOS ---
+        function renderizarPagina() {
+            var contenedor = document.getElementById('contenedor-boletos');
+            if (!contenedor) return;
+            
+            var htmlFinal = "";
+            var start = (paginaActual - 1) * BOLETOS_POR_PAGINA + 1;
+            var end = Math.min(paginaActual * BOLETOS_POR_PAGINA, TOTAL_BOLETOS);
+
+            for (var i = start; i <= end; i++) {
+                var numCeros = ("000000" + i).slice(-6);
+                var claseExtra = "";
+
+                if (boletosOcupados.indexOf(i) !== -1) {
+                    claseExtra = "ocupado";
+                } else if (seleccionados.indexOf(i) !== -1) {
+                    claseExtra = "seleccionado";
+                }
+
+                htmlFinal += '<div class="boleto ' + claseExtra + '" onclick="toggleSeleccion(' + i + ', this)">' + numCeros + '</div>';
+            }
+            
+            contenedor.innerHTML = htmlFinal;
+            
+            var totalPags = Math.ceil(TOTAL_BOLETOS / BOLETOS_POR_PAGINA);
+            document.getElementById('texto-pagina').textContent = 'Página ' + paginaActual + ' de ' + totalPags;
+            document.getElementById('btn-ant').disabled = (paginaActual === 1);
+            document.getElementById('btn-ant-full').disabled = (paginaActual === 1);
+            document.getElementById('btn-sig').disabled = (paginaActual === totalPags);
+            document.getElementById('btn-sig-full').disabled = (paginaActual === totalPags);
+        }
+
+        window.onload = function() {
+            cargarConfiguracion(); // Cargamos fecha y foto primero
+            renderizarPagina();
+            conectarBaseDeDatos();
+        };
+
+        // --- 2. BUSCADOR DIRECTO ---
+        function irAlBoleto() {
+            var inputNum = parseInt(document.getElementById('buscar-numero').value);
+            
+            if (isNaN(inputNum) || inputNum < 1 || inputNum > TOTAL_BOLETOS) {
+                Swal.fire('Ups', 'Ingresa un número entre 1 y 100,000', 'warning');
+                return;
+            }
+
+            paginaActual = Math.ceil(inputNum / BOLETOS_POR_PAGINA);
+            renderizarPagina();
+            document.querySelector('.paginacion').scrollIntoView({ behavior: 'smooth' });
+            document.getElementById('buscar-numero').value = '';
+        }
+
+        function cambiarPaginaExtrema(dir) {
+            var total = Math.ceil(TOTAL_BOLETOS / BOLETOS_POR_PAGINA);
+            if (dir === -1) paginaActual = 1;
+            if (dir === 1) paginaActual = total;
+            renderizarPagina();
+        }
+
+        function cambiarPagina(dir) {
+            var total = Math.ceil(TOTAL_BOLETOS / BOLETOS_POR_PAGINA);
+            if (dir === -1 && paginaActual > 1) paginaActual--;
+            if (dir === 1 && paginaActual < total) paginaActual++;
+            renderizarPagina();
+            document.querySelector('.area-compra').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // --- 3. INTERACCIÓN DEL USUARIO ---
+        function toggleSeleccion(numero, elemento) {
+            if (boletosOcupados.indexOf(numero) !== -1) return; 
+
+            var indice = seleccionados.indexOf(numero);
+            if (indice !== -1) {
+                seleccionados.splice(indice, 1);
+                elemento.classList.remove('seleccionado');
+            } else {
+                seleccionados.push(numero);
+                elemento.classList.add('seleccionado');
+            }
+            actualizarBarraPago();
+        }
+
+        function actualizarBarraPago() {
+            var barra = document.getElementById('barra-pago');
+            var txtTotal = document.getElementById('total');
+            
+            if (seleccionados.length > 0) {
+                barra.classList.add('activo');
+                txtTotal.textContent = seleccionados.length * PRECIO;
+            } else {
+                barra.classList.remove('activo');
+            }
+        }
+
+        function seleccionarAlAzar() {
+            var cantidad = parseInt(document.getElementById('cantidad-azar').value);
+            if (isNaN(cantidad) || cantidad < 1) return;
+
+            var intentos = 0;
+            var nuevosSeleccionados = [];
+            
+            Swal.fire({ title: 'Buscando tu suerte...', didOpen: () => { Swal.showLoading() } });
+
+            while (nuevosSeleccionados.length < cantidad && intentos < 200000) {
+                var numAleatorio = Math.floor(Math.random() * TOTAL_BOLETOS) + 1;
+                
+                if (boletosOcupados.indexOf(numAleatorio) === -1 && seleccionados.indexOf(numAleatorio) === -1 && nuevosSeleccionados.indexOf(numAleatorio) === -1) {
+                    nuevosSeleccionados.push(numAleatorio);
+                }
+                intentos++;
+            }
+
+            if (nuevosSeleccionados.length < cantidad) {
+                Swal.fire('Lo sentimos', 'Casi no quedan boletos disponibles', 'info');
+                return;
+            }
+
+            seleccionados = seleccionados.concat(nuevosSeleccionados);
+            paginaActual = Math.ceil(nuevosSeleccionados[0] / BOLETOS_POR_PAGINA);
+            
+            renderizarPagina();
+            actualizarBarraPago();
+            Swal.fire({ icon: 'success', title: '¡Suerte!', text: 'Se agregaron ' + cantidad + ' boletos.', timer: 1500, showConfirmButton: false });
+        }
+
+        // --- 4. CONEXIÓN A BASE DE DATOS ---
+        async function conectarBaseDeDatos() {
+            try {
+                if (typeof window.supabase === 'undefined') return;
+                
+                if (!supabaseCliente) {
+                    supabaseCliente = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+                }
+                var { data, error } = await supabaseCliente.from('boletos').select('numero_boleto, estado, created_at');
+                
+                if (data && data.length > 0) {
+                    var ahora = new Date();
+                    boletosOcupados = [];
+
+                    for (var i = 0; i < data.length; i++) {
+                        var b = data[i];
+                        if (b.estado === 'vendido') {
+                            boletosOcupados.push(b.numero_boleto);
+                        } else if (b.estado === 'apartado') {
+                            if (b.created_at) {
+                                var fechaCreacion = new Date(b.created_at);
+                                var minsPasados = (ahora - fechaCreacion) / (1000 * 60);
+                                if (minsPasados < MINUTOS_EXPIRACION) {
+                                    boletosOcupados.push(b.numero_boleto);
+                                }
+                            } else {
+                                boletosOcupados.push(b.numero_boleto);
+                            }
+                        }
+                    }
+                    renderizarPagina(); 
+                }
+            } catch(e) {
+                console.log("Error silencioso de BD");
+            }
+        }
+
+        // --- 5. REDIRIGIR AL PAGO Y PEDIR DATOS ---
+        async function irAPagar() {
+            if (seleccionados.length === 0) return;
+
+            var result = await Swal.fire({
+                title: 'Tus Datos para el Sorteo',
+                html:
+                    '<input id="swal-nombre" class="swal2-input" placeholder="Tu Nombre Completo">' +
+                    '<input id="swal-tel" type="tel" class="swal2-input" placeholder="Tu WhatsApp (10 dígitos)">',
+                focusConfirm: false,
+                confirmButtonText: 'Continuar al Pago',
+                confirmButtonColor: '#c5a028',
+                showCancelButton: true,
+                cancelButtonText: 'Cancelar',
+                preConfirm: function() {
+                    var nombre = document.getElementById('swal-nombre').value;
+                    var tel = document.getElementById('swal-tel').value;
+                    if (!nombre || !tel) {
+                        Swal.showValidationMessage('Por favor llena ambos campos');
+                        return false;
+                    }
+                    return { nombre: nombre, telefono: tel };
+                }
+            });
+
+            if (result.isConfirmed) {
+                var btn = document.getElementById('btnPagar');
+                btn.textContent = "Procesando...";
+                btn.disabled = true;
+
+                try {
+                    if (supabaseCliente) {
+                        var inserts = [];
+                        for (var i = 0; i < seleccionados.length; i++) {
+                            inserts.push({
+                                numero_boleto: seleccionados[i],
+                                estado: 'apartado',
+                                comprador_nombre: result.value.nombre,
+                                comprador_telefono: result.value.telefono
+                            });
+                        }
+                        await supabaseCliente.from('boletos').upsert(inserts, { onConflict: 'numero_boleto' });
+                    }
+                } catch(e) { console.log(e); }
+
+                window.location.href = 'checkout.html?boletos=' + seleccionados.join(',');
+            }
+        }
+
+        // --- 6. VERIFICADOR ---
+        async function verificarBoleto() {
+            var resultado = await Swal.fire({
+                title: 'Verificar Boleto',
+                input: 'text',
+                inputLabel: 'Ingresa tu Folio (ej. VOL-XXXXXX)',
+                inputPlaceholder: 'Escribe tu folio aquí...',
+                showCancelButton: true,
+                confirmButtonColor: '#c5a028',
+                confirmButtonText: 'Verificar'
+            });
+
+            if (resultado.value && supabaseCliente) {
+                Swal.showLoading();
+                var folioLimpio = resultado.value.trim().toUpperCase();
+                
+                var { data } = await supabaseCliente
+                    .from('boletos')
+                    .select('numero_boleto, comprador_nombre, estado')
+                    .eq('folio', folioLimpio)
+                    .eq('estado', 'vendido');
+
+                if (data && data.length > 0) {
+                    var numerosArr = data.map(function(b) { 
+                        return ("000000" + b.numero_boleto).slice(-6); 
+                    }).join(', ');
+                    
+                    Swal.fire({
+                        icon: 'success',
+                        title: '¡Boleto Original! ✅',
+                        html: '<b>Comprador:</b> ' + data[0].comprador_nombre + '<br><b>Boletos:</b> ' + numerosArr + '<br><br><span style="color:green;">Válido para el sorteo</span>'
+                    });
+                } else {
+                    Swal.fire({ icon: 'error', title: 'Folio Inválido ❌', text: 'No encontramos este folio o el pago no está completado.' });
+                }
+            }
+        }
+    </script>
+</body>
+</html>
