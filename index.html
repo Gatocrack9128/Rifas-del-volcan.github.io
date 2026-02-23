@@ -59,12 +59,19 @@
         .footer-links a:hover { color: var(--dorado-solido); text-decoration: underline; }
         .separador { margin: 0 10px; color: #444; }
         .creditos { margin-top: 25px; font-size: 0.75rem; opacity: 0.6; letter-spacing: 0.5px; }
-        
-        /* ESTILOS PARA TU ENLACE DEL FOOTER */
         .link-creador { color: var(--dorado-solido); text-decoration: none; font-weight: 900; transition: all 0.3s ease; }
         .link-creador:hover { text-decoration: underline; opacity: 0.8; }
 
-        @media (max-width: 600px) { .grid-boletos { grid-template-columns: repeat(4, 1fr); } }
+        /* ESTILOS PARA LA BURBUJA DE WHATSAPP */
+        .whatsapp-flotante { position: fixed; bottom: 25px; right: 25px; z-index: 3000; display: flex; flex-direction: column; align-items: flex-end; }
+        .wa-mensaje { background: white; color: var(--negro-suave); padding: 12px 15px; border-radius: 10px; font-size: 0.85rem; font-weight: 700; box-shadow: 0 4px 15px rgba(0,0,0,0.15); margin-bottom: 15px; position: relative; opacity: 1; transition: opacity 0.5s ease, transform 0.5s ease; border: 1px solid #eee; border-left: 4px solid var(--verde-whatsapp); display: flex; align-items: center; gap: 10px; }
+        .wa-mensaje.oculto { opacity: 0; transform: translateY(20px); pointer-events: none; }
+        .btn-cerrar-wa { background: transparent; border: none; color: #999; cursor: pointer; font-size: 1.1rem; padding: 0; transition: 0.3s; }
+        .btn-cerrar-wa:hover { color: #333; transform: scale(1.1); }
+        .wa-boton { background-color: var(--verde-whatsapp); color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 35px; box-shadow: 0 5px 15px rgba(37, 211, 102, 0.4); text-decoration: none; transition: transform 0.3s; }
+        .wa-boton:hover { transform: scale(1.1); color: white; }
+
+        @media (max-width: 600px) { .grid-boletos { grid-template-columns: repeat(4, 1fr); } .whatsapp-flotante { bottom: 15px; right: 15px; } .wa-boton { width: 55px; height: 55px; font-size: 30px; } }
     </style>
 </head>
 <body>
@@ -85,7 +92,7 @@
         
         <div class="precio-pill">$1.00 MXN x Boleto</div><br>
 
-        <a href="https://www.facebook.com/share/1AgN2zWADJ/?mibextid=wwXIfr" target="_blank" class="btn-facebook">
+        <a href="TU_LINK_DE_FACEBOOK_AQUI" target="_blank" class="btn-facebook">
             <i class="fab fa-facebook-f"></i> Sigue la Rifa en VIVO
         </a>
     </section>
@@ -120,6 +127,16 @@
         <div class="grid-boletos" id="contenedor-boletos"></div>
     </section>
 
+    <div class="whatsapp-flotante">
+        <div class="wa-mensaje" id="wa-mensaje">
+            <span>Si tienes dudas, comunícate con nosotros</span>
+            <button class="btn-cerrar-wa" onclick="cerrarMensajeWA()" title="Cerrar mensaje"><i class="fas fa-times"></i></button>
+        </div>
+        <a href="https://wa.me/522216324043" target="_blank" class="wa-boton" title="Escríbenos por WhatsApp">
+            <i class="fab fa-whatsapp"></i>
+        </a>
+    </div>
+
     <div class="panel-pago" id="barra-pago">
         <button class="btn-ir-pagar" id="btnPagar" onclick="irAPagar()">Apartar y Pagar $<span id="total">0</span></button>
     </div>
@@ -132,7 +149,7 @@
             <a href="privacidad.html">Aviso de Privacidad</a>
         </div>
         <div class="creditos">
-            Creado y Diseñado por <a href="https://www.instagram.com/1adgl2?igsh=MXNtbTlqNTd5Y2I3cQ%3D%3D&utm_source=qr" target="_blank" class="link-creador">Antuan Lima</a>
+            Creado y Diseñado por <a href="TU_ENLACE_DE_INSTAGRAM_AQUI" target="_blank" class="link-creador">Antuan Lima</a>
         </div>
     </footer>
 
@@ -149,6 +166,16 @@
         var seleccionados = [];
         var boletosOcupados = []; 
         var supabaseCliente = null;
+
+        // --- CERRAR MENSAJE DE WHATSAPP AUTOMÁTICAMENTE ---
+        function cerrarMensajeWA() {
+            var mensaje = document.getElementById('wa-mensaje');
+            if(mensaje) {
+                mensaje.classList.add('oculto');
+            }
+        }
+        // El mensaje se cierra solo a los 8 segundos (8000 milisegundos)
+        setTimeout(cerrarMensajeWA, 8000);
 
         // --- 0. CARGAR CONFIGURACIÓN (FECHA E IMAGEN) ---
         async function cargarConfiguracion() {
@@ -198,7 +225,7 @@
         }
 
         window.onload = function() {
-            cargarConfiguracion(); // Cargamos fecha y foto primero
+            cargarConfiguracion(); 
             renderizarPagina();
             conectarBaseDeDatos();
         };
@@ -206,12 +233,10 @@
         // --- 2. BUSCADOR DIRECTO ---
         function irAlBoleto() {
             var inputNum = parseInt(document.getElementById('buscar-numero').value);
-            
             if (isNaN(inputNum) || inputNum < 1 || inputNum > TOTAL_BOLETOS) {
                 Swal.fire('Ups', 'Ingresa un número entre 1 y 100,000', 'warning');
                 return;
             }
-
             paginaActual = Math.ceil(inputNum / BOLETOS_POR_PAGINA);
             renderizarPagina();
             document.querySelector('.paginacion').scrollIntoView({ behavior: 'smooth' });
@@ -236,7 +261,6 @@
         // --- 3. INTERACCIÓN DEL USUARIO ---
         function toggleSeleccion(numero, elemento) {
             if (boletosOcupados.indexOf(numero) !== -1) return; 
-
             var indice = seleccionados.indexOf(numero);
             if (indice !== -1) {
                 seleccionados.splice(indice, 1);
@@ -251,7 +275,6 @@
         function actualizarBarraPago() {
             var barra = document.getElementById('barra-pago');
             var txtTotal = document.getElementById('total');
-            
             if (seleccionados.length > 0) {
                 barra.classList.add('activo');
                 txtTotal.textContent = seleccionados.length * PRECIO;
@@ -263,15 +286,12 @@
         function seleccionarAlAzar() {
             var cantidad = parseInt(document.getElementById('cantidad-azar').value);
             if (isNaN(cantidad) || cantidad < 1) return;
-
             var intentos = 0;
             var nuevosSeleccionados = [];
-            
             Swal.fire({ title: 'Buscando tu suerte...', didOpen: () => { Swal.showLoading() } });
 
             while (nuevosSeleccionados.length < cantidad && intentos < 200000) {
                 var numAleatorio = Math.floor(Math.random() * TOTAL_BOLETOS) + 1;
-                
                 if (boletosOcupados.indexOf(numAleatorio) === -1 && seleccionados.indexOf(numAleatorio) === -1 && nuevosSeleccionados.indexOf(numAleatorio) === -1) {
                     nuevosSeleccionados.push(numAleatorio);
                 }
@@ -285,7 +305,6 @@
 
             seleccionados = seleccionados.concat(nuevosSeleccionados);
             paginaActual = Math.ceil(nuevosSeleccionados[0] / BOLETOS_POR_PAGINA);
-            
             renderizarPagina();
             actualizarBarraPago();
             Swal.fire({ icon: 'success', title: '¡Suerte!', text: 'Se agregaron ' + cantidad + ' boletos.', timer: 1500, showConfirmButton: false });
@@ -295,7 +314,6 @@
         async function conectarBaseDeDatos() {
             try {
                 if (typeof window.supabase === 'undefined') return;
-                
                 if (!supabaseCliente) {
                     supabaseCliente = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                 }
@@ -304,7 +322,6 @@
                 if (data && data.length > 0) {
                     var ahora = new Date();
                     boletosOcupados = [];
-
                     for (var i = 0; i < data.length; i++) {
                         var b = data[i];
                         if (b.estado === 'vendido') {
@@ -331,7 +348,6 @@
         // --- 5. REDIRIGIR AL PAGO Y PEDIR DATOS ---
         async function irAPagar() {
             if (seleccionados.length === 0) return;
-
             var result = await Swal.fire({
                 title: 'Tus Datos para el Sorteo',
                 html:
@@ -357,7 +373,6 @@
                 var btn = document.getElementById('btnPagar');
                 btn.textContent = "Procesando...";
                 btn.disabled = true;
-
                 try {
                     if (supabaseCliente) {
                         var inserts = [];
@@ -372,7 +387,6 @@
                         await supabaseCliente.from('boletos').upsert(inserts, { onConflict: 'numero_boleto' });
                     }
                 } catch(e) { console.log(e); }
-
                 window.location.href = 'checkout.html?boletos=' + seleccionados.join(',');
             }
         }
@@ -392,7 +406,6 @@
             if (resultado.value && supabaseCliente) {
                 Swal.showLoading();
                 var folioLimpio = resultado.value.trim().toUpperCase();
-                
                 var { data } = await supabaseCliente
                     .from('boletos')
                     .select('numero_boleto, comprador_nombre, estado')
@@ -417,4 +430,3 @@
     </script>
 </body>
 </html>
-
